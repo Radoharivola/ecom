@@ -16,6 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductController extends AbstractController
 {
     /**
+    * @Route("/test", name="product_test", methods={"GET"})
+    */
+    public function test(ManagerRegistry $doctrine): Response
+    {
+        
+  
+  
+        return $this->json("gello");
+    }
+
+    /**
     * @Route("/products", name="product_index", methods={"GET"})
     */
     public function index(ManagerRegistry $doctrine): Response
