@@ -83,4 +83,28 @@ class UserController extends AbstractController
         $entityManager->flush();
         return $this->json(['message' => 'category added'], 200);
     }
+
+    /**
+     * @Route("/test", name="api_test", methods={"GET"})
+     */
+    public function test(#[CurrentUser] ?User $user): Response
+    {
+        if (null === $user) {
+            return $this->json([
+                'error' => 'missing user',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json([
+            'message' => 'Welcome ' . $user->getUserIdentifier(),
+            'username'  => $user->getUsername(),
+            'roles' => $user->getRoles(),
+            'id' => $user->getId()
+        ]);
+        // if (!$this->passwordHasher->isPasswordValid($user, $parameters['password'])) {
+        //     return $this->json([
+        //         'error' => 'mot de passe incorrect!!',
+        //     ], Response::HTTP_UNAUTHORIZED);
+        // }
+    }
 }

@@ -15,16 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ProductController extends AbstractController
 {
-    /**
-    * @Route("/test", name="product_test", methods={"GET"})
-    */
-    public function test(ManagerRegistry $doctrine): Response
-    {
-        
-  
-  
-        return $this->json("gello");
-    }
+   
 
     /**
     * @Route("/products", name="product_index", methods={"GET"})
@@ -48,7 +39,57 @@ class ProductController extends AbstractController
   
         return $this->json($data);
     }
+
+    /**
+    * @Route("/products/user/{id}", name="product_user", methods={"GET"})
+    */
+    public function getUserProduct(ManagerRegistry $doctrine, int $id): Response
+    {
+        $products = $doctrine
+            ->getRepository(Product::class)
+            ->findBy(array('user_id' => $id),array('create_date'=>'ASC'));
+        if(!$products){
+            return $this->json('No product found for idUser ' . $id, 404);
+        }
+        $data = [];
+        foreach ($products as $product) {
+            $data[] = [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'weight' => $product->getWeight(),
+                'description' => $product->getDescription(),
+                'createDate' => $product->getCreateDate()
+            ];
+        }
+        return $this->json($data);
+    }
  
+    /**
+    * @Route("/products/category/{id}", name="product_category", methods={"GET"})
+    */
+    public function getCategoryProducts(ManagerRegistry $doctrine, int $id): Response
+    {
+        $productCategories = $doctrine
+            ->getRepository(ProductCategory::class)
+            ->findBy(array('category_id' => $id));
+        if(!$productCategories){
+            return $this->json('No product found for idCategory ' . $id, 404);
+        }
+        $data = [];
+        foreach ($productCategories as $productCategory) {
+            $product=$productCategory->getProduct();
+            $data[] = [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'weight' => $product->getWeight(),
+                'description' => $product->getDescription(),
+                'createDate' => $product->getCreateDate()
+            ];
+        }
+        return $this->json($data);
+    }
   
     /**
      * @Route("/product", name="product_new", methods={"POST"})
